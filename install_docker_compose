@@ -1,0 +1,6 @@
+yum config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+#uske baad go to /etc/yum.repos.d
+baseurl=https://download.docker.com/linux/centos/$releasever/$basearch/stable
+#replace this $releasever with 7
+baseurl=https://download.docker.com/linux/centos/7/$basearch/stable
+yum install docker-compose-plugin -y
