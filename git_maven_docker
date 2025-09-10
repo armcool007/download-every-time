@@ -1,3 +1,5 @@
 sudo yum install docker* -y
 sudo yum install git -y
 sudo yum install maven -y
+#to start a docker daemon
+sudo systemctl enable --now docker
