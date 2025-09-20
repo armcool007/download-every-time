@@ -68,25 +68,30 @@ spec:
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-metadata: 
+metadata:
   name: ingress1
+  namespace: ingress-nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-    http:
-      - pathType: Prefix
-        path: 
+  - http:
+      paths:
+      - path: /tomcat
+        pathType: Prefix
+        backend:
+          service:
+            name: tomcat-svc
+            namespace: test
+            port:
+              number: 9999
+      - path: /nginx
+        pathType: Prefix
         backend:
           service:
             name: nginx-svc
+            namespace: test
             port:
               number: 80
-      - pathType: Prefix
-        path:
-          backend:
-            service:
-              name: tomcat-svc
-              port:
-                number: 9999
 ...
-
