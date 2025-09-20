@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Pod
 metadata: 
   name: tomcatapp
-  namespace: test
+  namespace: ingress-nginx
   labels:
     name: tomcatapp
 spec:
@@ -17,9 +17,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: tomcat-svc
-  namespace: test
+  namespace: ingress-nginx
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     name: tomcatapp
   ports:
@@ -33,7 +33,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app2
-  namespace: test
+  namespace: ingress-nginx
   labels:
     name: app2
 spec:
@@ -56,16 +56,15 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-svc
-  namespace: test
+  namespace: ingress-nginx
 spec:
   selector:
     name: app2
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: 80
 ...
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -94,4 +93,4 @@ spec:
             namespace: test
             port:
               number: 80
-...
+
