@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: tomcatapp
+  namespace: test
+  labels:
+    name: tomcatapp
+spec:
+  containers:
+    - name: tomcat
+      image: tomcat
+      ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-svc
+  namespace: test
+spec:
+  type: LoadBalancer
+  selector:
+    name: tomcatapp
+  ports:
+    - port: 9999
+      targetPort: 8080
+...
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app2
+  namespace: test
+  labels:
+    name: app2
+spec:
+  selector:
+    matchLabels:
+      name: app2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: app2
+    spec:
+      containers:
+       - name: nginx-app2
+         image: nginx
+         ports:
+           - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+  namespace: test
+spec:
+  selector:
+    name: app2
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 80
+...
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: 
+  name: ingress1
+spec:
+  ingressClassName: nginx
+  rules:
+    http:
+      - pathType: Prefix
+        path: 
+        backend:
+          service:
+            name: nginx-svc
+            port:
+              number: 80
+      - pathType: Prefix
+        path:
+          backend:
+            service:
+              name: tomcat-svc
+              port:
+                number: 9999
+...
+
