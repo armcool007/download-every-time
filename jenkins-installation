@@ -1,0 +1,24 @@
+#Install Java (Jenkins requires Java 11+)
+sudo apt install -y openjdk-11-jdk
+
+#Verify Java version:
+java -version
+
+#Add Jenkins repository
+#Import Jenkins GPG key:
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io.key | sudo tee \
+  /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+
+
+#Add Jenkins APT repository:
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" | \
+  sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+#Install Jenkins
+sudo apt update
+sudo apt install -y jenkins
+
+#Start and enable Jenkins service
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+sudo systemctl status jenkins
