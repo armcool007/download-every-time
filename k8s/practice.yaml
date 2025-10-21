@@ -1,0 +1,191 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: practice
+  labels:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/part-of: practice-stack
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: practice
+  labels:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/component: config
+    app.kubernetes.io/part-of: practice-stack
+data:
+  APP_MESSAGE: "Hello from ConfigMap!"
+  APP_LOG_LEVEL: "info"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+  namespace: practice
+  labels:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/component: secret
+    app.kubernetes.io/part-of: practice-stack
+stringData:
+  APP_SECRET_TOKEN: "super-secret-token"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: practice-web
+  namespace: practice
+  labels:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: practice-stack
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: practice
+      app.kubernetes.io/component: web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: practice
+        app.kubernetes.io/component: web
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/akshjums/hello-nginx:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: APP_MESSAGE
+            - name: APP_LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: APP_LOG_LEVEL
+            - name: APP_SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: APP_SECRET_TOKEN
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: practice-web
+  namespace: practice
+  labels:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: practice-stack
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/component: web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: practice-web-hpa
+  namespace: practice
+  labels:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/component: hpa
+    app.kubernetes.io/part-of: practice-stack
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: practice-web
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: practice-web
+  namespace: practice
+  labels:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/component: ingress
+    app.kubernetes.io/part-of: practice-stack
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: practice.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: practice-web
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - practice.local
+      secretName: practice-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: practice-cert
+  namespace: practice
+  labels:
+    app.kubernetes.io/name: practice
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/part-of: practice-stack
+spec:
+  secretName: practice-tls
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+  dnsNames:
+    - practice.local
