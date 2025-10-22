@@ -103,5 +103,5 @@ def healthz():
     return {"status": "ok", "app": "ColorSplash", "time": datetime.utcnow().isoformat()}, 200
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", "8050"))
+    port = int(os.getenv("PORT", "5000"))
     app.run_server(host="0.0.0.0", port=port, debug=False)
