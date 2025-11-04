@@ -23,3 +23,20 @@ echo "✅ Jenkins 2.462.3 installed!"
 echo "🌐 Access at: http://$(hostname -I | awk '{print $1}'):8080"
 echo "🔑 Initial admin password:"
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+
+
+
+# ----------    FOR FEDORA BASED DISTRIBUTION   -------------
+# If you're using Amazon Linux 2 / Amazon Linux AMI for installing java-17
+sudo amazon-linux-extras enable corretto17
+sudo yum clean metadata
+sudo yum install java-17-amazon-corretto java-17-amazon-corretto-devel -y
+
+# Install Jenkins
+wget https://pkg.jenkins.io/redhat-stable/jenkins-2.462.3-1.1.noarch.rpm
+sudo yum install jenkins-2.462.3-1.1.noarch.rpm -y
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+sudo systemctl status jenkins
+
