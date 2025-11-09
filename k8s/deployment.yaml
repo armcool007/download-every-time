@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: colorsplash
+  labels:
+    app: colorsplash
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: colorsplash
+  template:
+    metadata:
+      labels:
+        app: colorsplash
+    spec:
+      containers:
+        - name: colorsplash
+          image: your-dockerhub-username/colorsplash:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              value: "5000"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 20
