@@ -1,4 +1,4 @@
 for copying any file from one ec2 machine to another ec2 machine 
 step-1: pem file se login karo target ec2 machine me
 step-2: if you can login through pem then then use scp command aur target ec2 machine ki he pem file honi chahiye
-step-3: scp -r apache-tomcat-9.0.98 ubuntu@13.233.198.188:/tmp
+step-3: scp -i <pem_file> -r apache-tomcat-9.0.98 ubuntu@13.233.198.188:/tmp
