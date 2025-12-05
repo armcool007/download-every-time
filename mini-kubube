@@ -1,0 +1,26 @@
+#installing mini-kubube in ubuntu
+✅ Install Minikube on Ubuntu — Step-by-Step
+1) Update packages
+sudo apt update -y
+sudo apt upgrade -y
+
+2) Install required dependencies
+sudo apt install -y curl apt-transport-https 
+
+
+3) Install Docker (recommended driver)
+sudo apt install -y docker.io
+sudo usermod -aG docker $USER
+newgrp docker
+
+4) Download Minikube
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+5) Install Minikube
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+6) Verify installation
+minikube version
+
+then run:
+$minikube start
