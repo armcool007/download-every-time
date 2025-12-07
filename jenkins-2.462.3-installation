@@ -1,4 +1,6 @@
-version=2.479.1 all working
+                                                  version=2.492.3 working latest
+                                                  version=2.479.1 all working
+
 #!/bin/bash
 set -e
 
@@ -6,11 +8,11 @@ set -e
 sudo apt update
 sudo apt install -y openjdk-17-jdk
 
-# 2. Download Jenkins 2.462.3 .deb package directly
-wget https://pkg.jenkins.io/debian-stable/binary/jenkins_2.462.3_all.deb
+# 2. Download Jenkins 2.492.3 .deb package directly
+wget https://pkg.jenkins.io/debian-stable/binary/jenkins_2.492.3_all.deb
 
 # 3. Install the package (with dependencies)
-sudo dpkg -i jenkins_2.462.3_all.deb || sudo apt --fix-broken -y install
+sudo dpkg -i jenkins_2.492.3_all.deb || sudo apt --fix-broken -y install
 
 # 4. Prevent auto-upgrade (critical!)
 sudo apt-mark hold jenkins
@@ -20,7 +22,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now jenkins
 
 # 6. Show status and initial password
-echo "✅ Jenkins 2.462.3 installed!"
+echo "✅ Jenkins 2.492.3 installed!"
 echo "🌐 Access at: http://$(hostname -I | awk '{print $1}'):8080"
 echo "🔑 Initial admin password:"
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
