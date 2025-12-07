@@ -1,3 +1,4 @@
+version=2.479.1 all working
 #!/bin/bash
 set -e
 
