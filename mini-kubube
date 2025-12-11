@@ -41,3 +41,48 @@ sudo mv kubectl /usr/local/bin/
 
 4) Check version
 kubectl version --client
+
+##############################################################################
+
+Step 1: Start Minikube with --driver=docker (if not already)
+You likely did this, but confirm:
+
+minikube start --driver=docker
+
+Step 2: Run kubectl port-forward inside EC2 (as before)
+
+⚠️ --address 0.0.0.0 is critical!
+By default, port-forward only binds to 127.0.0.1 (localhost).
+--address 0.0.0.0 makes it listen on all interfaces, including the EC2’s public IP.
+
+But wait — you’ll get a permission error because non-root can’t bind to 0.0.0.0 for security.
+🔒 Fix that with one of these:
+👉 Option A: Use socat as a proxy (safe & works)
+Install socat on EC2:
+
+Run port-forward on localhost (default):
+
+(Keep this running)
+In another terminal, expose it to external:
+
+Now, from your laptop, go to:
+
+1
+✅ And make sure your EC2 Security Group allows inbound TCP on port 8085
+
+Step 3: Open port in EC2 Security Group
+In AWS Console:
+
+Go to EC2 → Security Groups
+Edit Inbound Rules
+Add:
+Type: Custom TCP
+Port: 8085
+Source: Your IP (or 0.0.0.0/0 for testing only)
+Step 4: Access from laptop browser
+Open:
+
+1
+Click Advanced → Proceed anyway (self-signed cert).
+
+✅ Now it should work!
