@@ -1,3 +1,4 @@
+#uper wale "- job_name" ke sath align krte chalna bcoz it is a yml file.
 - job_name: 'blackbox'
     metrics_path: /probe
     params:
