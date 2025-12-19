@@ -1,0 +1,28 @@
+- job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # Look for a HTTP 200 response.
+    static_configs:
+      - targets:
+          - http://prometheus.io      # Target to probe with HTTP.
+          - http://15.207.154.99:3000 # Target to probe with HTTPS. #http://IP:3000(ip of grafana)
+          - http://a57ed23f9c458412aa20a155221c48d2-1973915241.ap-south-1.elb.amazonaws.com/ #on which website is hosted.
+
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 15.207.154.99:9115  # The blackbox exporter's real hostname.
+
+  - job_name: 'jenkins'
+    metrics_path: '/prometheus'
+    static_configs:
+      - targets:
+          - '15.207.154.99:8080'  #jenkins ip
+    
+
+#after this do $netstat tulpn and kill the prometheus process and go to /etc/prometheus and run in background and hit enter $prometheus & --> enter 
+#then check again the netstat it will start running. And you can see in the blackbox--> tasks sections.
+#and add the dashboard for jenkins and blackbox to scrape(pull) the data and store it. 
