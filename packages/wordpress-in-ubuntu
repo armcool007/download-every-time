@@ -1,2 +1,12 @@
 #installing wordpress and required software to use WORDPRESS ubuntu
 sudo apt install apache2 mysql-server libapache2-mod-php unzip -y
+
+#create a database
+CREATE DATABASE wordpress;
+CREATE USER 'wpuser'@'localhost' IDENTIFIED by 'passward';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'localhost';
+
+#now delete the data in the /var/www/html/index.html file
+
+#now install the wordpress
+sudo wget https://wordpress.org/latest.zip
