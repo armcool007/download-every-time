@@ -38,3 +38,5 @@ sudo systemctl restart apache2
 
 #now try to access the through machie public ip address
 
+#database name, username, password and the localhost jo database me put kiya tha vo sb daal do
+
