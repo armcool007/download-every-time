@@ -1,0 +1,2 @@
+#installing wordpress and required software to use WORDPRESS ubuntu
+sudo apt install apache2 mysql-server libapache2-mod-php unzip -y
