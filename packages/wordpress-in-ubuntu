@@ -10,3 +10,31 @@ GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'localhost';
 
 #now install the wordpress
 sudo wget https://wordpress.org/latest.zip
+#uzip wordpress and mv the content of the wordpress in the /var/www/html/
+
+#change the owner and group
+sudo chown -R www-data:www-data *
+
+
+#creating apache configuration file
+sudo vi /etc/apache2/sites-available/wordpress.conf
+<VirtualHost *:80>
+    ServerAdmin admin@nehraclasses.in
+    ServerName nehraclasses.in
+    ServerAlias www.nehraclasses.in
+    DocumentRoot /var/www/html
+
+    <Directory /var/www/html>
+        AllowOverride All
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+#now enable configuration and rewrite the module
+sudo a2ensite wordpress
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+
+#now try to access the through machie public ip address
+
