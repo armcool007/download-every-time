@@ -40,3 +40,7 @@ sudo systemctl restart apache2
 
 #database name, username, password and the localhost jo database me put kiya tha vo sb daal do
 
+# to make the website https secure we will install python and cert certificates
+sudo apt install certbot python3-certbot-apache -y
+sudo certbot --apache -d nehraclasses.in -d www.nehraclassess.in
+
