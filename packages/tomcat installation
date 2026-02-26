@@ -1,0 +1,16 @@
+#download the tomcat version 9
+#in RHEL
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.115/bin/apache-tomcat-9.0.115.tar.gz
+
+vi /conf/tomcat-users.xml
+  <role rolename="manager-gui"/>
+  <role rolename="admin-gui"/>
+  <role rolename="manager-script"/>
+  <user username="tomcat" password="tomcat" roles="manager-gui,manager-script"/>
+  <user username="admin" password="admin" roles="admin-gui,manager-gui,manager-script"
+
+vi /webapps/manager/META-INF/context.xml
+#comment the below lines
+<!--  <Valve className="org.apache.catalina.valves.RemoteCIDRValve"
+         allow="127.0.0.0/8,::1/128" />
+-->
