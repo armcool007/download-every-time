@@ -1,0 +1,2 @@
+#to install net cat 
+yum install -y nmap-ncat
