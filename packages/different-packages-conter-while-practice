@@ -2,3 +2,7 @@
 yum install -y nmap-ncat
 # to install namp
 sudo yum install -y nmap
+#telnet in (Ubuntu/Debian):
+sudo apt install telnet
+#telnet in (CentOS/RHEL):
+sudo yum install telnet
