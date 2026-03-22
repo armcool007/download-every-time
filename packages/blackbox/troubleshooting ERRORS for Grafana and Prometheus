@@ -1,0 +1,168 @@
+#TOPICS COVERED IN THIS FILE:#
+----------------------------
+    - grafana data show nai kr raha hai data source add krne k baad bhi it shows "datasource ${DS_PROMETHEUS} was not found".
+    - errors ka mtlb while Configuring the /etc/prometheus/prometheus.yml then blackbox ko start krte he jo-2 errors aayenge unka solution.
+
+0) grafana data show nai kr raha hai data source add krne k baad bhi it shows "datasource ${DS_PROMETHEUS} was not found"
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    - after adding the datasource and dashboard in grafana if is shows errors "datasource ${DS_PROMETHEUS} was not found" while hovering
+      the mouse over the tabs. 
+    - then go "EDIT" which you will find in the secound line in the top right corner.
+    - then "SETTINGS".
+    - then "JSON MODEL".
+    - then in the editor right click and find "${DS_PROMETHEUS}" and uske sath se arrow hoga for replace click that and apne "datasource" 
+      ka name likho jo tumne diya hoga at the starting jb data source add kiya tha mere case me "prometheus" hai.
+    - then click replace all.
+    - if your forgot your datasource name the click connections --> Data sources --> Name prometheus(you can see your name prometheus).
+    - phir chalen lg jayega tumhara GRAFANA.
+    - all this in one line:
+            EDIT --> SETTINGS --> JSON MODEL --> change datasource
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+1) errors ka mtlb while Configuring the /etc/prometheus/prometheus.yml then blackbox ko start krte he jo-2 errors aayenge unka solution:
+========================================================================================================================================
+ye error show ho rahe the jb maine prometheus, granafna and jenkins ki entry /etc/prometheus.yml me kiya tha aur blackbox ko start kiya toh ye error aa raha tha:
+    time=2026-03-22T18:28:50.100Z level=ERROR source=handler.go:130 msg="Probe failed" module=http_2xx target=http://43.205.207.91:8080 duration_seconds=0.000796488
+    time=2026-03-22T18:28:56.961Z level=WARN source=http.go:490 msg="Received redirect" module=http_2xx target=http://43.205.207.91:3000 location=/login
+    time=2026-03-22T18:29:05.101Z level=ERROR source=http.go:585 msg="Error for HTTP request" module=http_2xx target=http://43.205.207.91:8080 err="Get \"http://43.205.207.91:8080\": dial tcp 43.205.207.91:8080: connect: connection refused"
+    time=2026-03-22T18:29:05.101Z level=ERROR source=handler.go:130 msg="Probe failed" module=http_2xx target=http://43.205.207.91:8080 duration_seconds=0.000916273
+    time=2026-03-22T18:29:11.962Z level=WARN source=http.go:490 msg="Received redirect" module=http_2xx target=http://43.205.207.91:3000 location=/login
+    time=2026-03-22T18:29:20.101Z level=ERROR source=http.go:585 msg="Error for HTTP request" module=http_2xx target=http://43.205.207.91:8080 err="Get \"http://43.205.207.91:8080\": dial tcp 43.205.207.91:8080: connect: connection refused"
+    time=2026-03-22T18:29:20.101Z level=ERROR source=handler.go:130 msg="Probe failed" module=http_2xx target=http://43.205.207.91:8080 duration_seconds=0.001366818
+    time=2026-03-22T18:29:26.961Z level=WARN source=http.go:490 msg="Received redirect" module=http_2xx target=http://43.205.207.91:3000 location=/login
+
+MEANINGS:
+    Error 1 — Received redirect
+    target=http://43.205.207.91:3000 location=/login
+    Matlab:
+    Blackbox gaya   → http://43.205.207.91:3000 pe
+    Server bola     → "Yahan mat jao, /login pe jao"
+    Blackbox bola   → "Mujhe 200 OK chahiye tha, redirect mila"
+
+    Simple: Grafana bina login ke access nahi deta
+
+    Error 2 — Connection refused
+    target=http://43.205.207.91:8080 connection refused
+    Matlab:
+    Blackbox gaya   → http://43.205.207.91:8080 pe
+    Server bola     → "Koi nahi hai yahan" (port band hai)
+
+    Simple: Us IP pe koi service nahi chal rahi port 8080 pe
+        Jenkins wahan nahi hai
+
+    Error 3 — Probe failed
+    msg="Probe failed" duration_seconds=0.000727056
+    Matlab:
+    Blackbox ne check kiya → website
+    Result aaya            → fail (200 OK nahi mila)
+
+    Simple: Website check fail ho gayi
+
+    How to read errors — Rule:
+    level=INFO  → sab theek hai, sirf information
+    level=WARN  → kuch galat hai but chal raha hai
+    level=ERROR → kuch band hai ya fail ho gaya
+
+    Aage kaise samjhoge:
+    Har error mein 3 cheezein dekho:
+
+    1. target = kaunsi website/IP check ho rahi thi
+                target=http://43.205.207.91:8080
+                → 43.205.207.91 IP ka port 8080
+
+    2. msg = kya hua
+            "connection refused" → port band hai
+            "Received redirect"  → website redirect kar rahi hai
+            "Probe failed"       → check fail hua
+
+    3. err = exact reason
+            dial tcp ... connection refused → server nahi mila
+            location=/login                → login page pe bheja
+
+    Simple dictionary:
+    Error                               Matlab
+    connection refused                  Port band hai ya service nahi chal rahi
+    Received redirect                   Website aur page pe bhej rahi hai
+    Probe failed                        Check fail hua
+    timeout                             Server ne response nahi diya
+    no such host                        Domain/IP exist nahi karta
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+1) agr ye error aaye:
+    time=2026-03-22T18:29:20.101Z level=ERROR source=http.go:585 msg="Error for HTTP request" module=http_2xx target=http://43.205.207.91:8080 err="Get \"http://43.205.207.91:8080\": dial tcp 43.205.207.91:8080: connect: connection refused"
+        
+           - toh iska mtlb hai ki apne jenkins ka ip galat dala hoga.
+
+2) time=2026-03-22T19:23:59.994Z level=ERROR source=handler.go:130 msg="Probe failed" module=http_2xx target=http://3.110.161.214:8080 duration_seconds=0.002651951
+
+           - iss error ka mtlb hai ki "prometheus" is not allowed to check the connection toh iske liye we have to do.
+           - Manage Jenkins 
+                → Configure Global Security
+                → Authorization
+                → "Anyone can do anything" select karo
+
+3) time=2026-03-22T18:37:11.961Z level=WARN source=http.go:490 msg="Received redirect" module=http_2xx target=http://43.205.207.91:3000 location=/login
+          - iss error "Grafana login page pe redirect kar raha hai — isliye aa raha hai!"
+          - TOH APKO Blackbox ME BHI CHANGES KRNE HOENGE. JO DEFINED HAI 3.1 ME.
+          - Blackbox check karne gaya → http://43.205.207.91:3000
+            Grafana ne bola           → "Pehle login karo" → /login
+            Blackbox ne bola          → "Mujhe 200 OK chahiye tha!"
+            Result                    → WARN ⚠️
+          - # /etc/grafana/grafana.ini mein
+                [auth.anonymous]
+                enabled = true
+          - if you are using the docker for grafana then this can't be channger you have to pass the envronment variable and then again
+            start the new container.
+          - # Naya container banao anonymous access ke saath
+                docker run -d \
+                --name grafana \
+                -p 3000:3000 \
+                -e GF_AUTH_ANONYMOUS_ENABLED=true \
+                -e GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer \
+                grafana/grafana
+          - -e GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+                # GF        = Grafana
+                # AUTH      = Authentication  
+                # ANONYMOUS = Bina login wala user
+                # ORG_ROLE  = Organization mein role kya hoga
+                # Viewer    = Sirf dekh sakta hai, edit nahi kar sakta
+                ```
+
+                ---
+
+                **Yaad karne ka trick:**
+                ```
+                GF  = Grafana
+                _   = ka / ki
+                AUTH_ANONYMOUS_ENABLED = Authentication Anonymous Enabled
+
+                Matlab → Grafana ki Anonymous Authentication Enable karo
+                ```
+
+                ---
+
+                **Kya Docker image mein jaake directly change kar sakte hain?**
+                ```
+                Docker image  = Read only ❌ (change nahi ho sakta)
+                Docker container = Chal raha hai, andar ja sakte ho ✅
+    3.1)
+        - Blackbox CHANGES which you have to do:
+            * # File kahan hai check karo
+                find / -name "blackbox.yml" 2>/dev/null
+            *   modules:
+                  http_2xx:
+                    prober: http
+                    http:
+                    follow_redirects: true
+                    valid_status_codes:
+                        - 200
+                        - 301
+                        - 302
+            * mainely ye 3 lines he add krni hai baki file vaise he rhne dena 
+                    "follow_redirects: true
+                    valid_status_codes:
+                        - 200
+                        - 301
+                        - 302"
+========================================================================================================================================
