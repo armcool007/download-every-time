@@ -27,3 +27,39 @@
 #after this do $netstat tulpn and kill the prometheus process and go to /etc/prometheus and run in background and hit enter $prometheus & --> enter 
 #then check again the netstat it will start running. And you can see in the blackbox--> tasks sections.
 #and add the dashboard for jenkins and blackbox to scrape(pull) the data and store it. 
+
+
+
+
+*****************************************************************************************************************************************************
+AGR UPER WALA NA CHALE THEN YOU CAN YOU THIS ALSO:
+*****************************************************************************************************************************************************
+- job_name: 'blackbox'
+  metrics_path: /probe
+  params:
+    module: [http_2xx]
+  static_configs:
+    - targets:
+        - http://15.206.28.196:3000   # Grafana
+        - http://65.2.167.238:8080    # Jenkins
+  relabel_configs:
+    - source_labels: [__address__]
+      target_label: __param_target
+    - source_labels: [__param_target]
+      target_label: instance
+    - target_label: __address__
+      replacement: 15.206.28.196:9115
+
+# Jenkins metrics
+- job_name: 'jenkins'
+  metrics_path: '/prometheus'
+  static_configs:
+    - targets:
+        - '65.2.167.238:8080'
+
+# Grafana metrics
+- job_name: 'grafana'
+  metrics_path: '/metrics'
+  static_configs:
+    - targets:
+        - '15.206.28.196:3000'        # ← yeh add karo
