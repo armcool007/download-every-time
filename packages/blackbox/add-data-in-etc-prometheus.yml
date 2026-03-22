@@ -40,6 +40,7 @@ AGR UPER WALA NA CHALE THEN YOU CAN YOU THIS ALSO:
     module: [http_2xx]
   static_configs:
     - targets:
+        - http://prometheus.io
         - http://15.206.28.196:3000   # Grafana
         - http://65.2.167.238:8080    # Jenkins
   relabel_configs:
