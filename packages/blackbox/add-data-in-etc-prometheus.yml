@@ -42,14 +42,14 @@ AGR UPER WALE SE NA CHALE THEN TRY THIS:
     - targets:
         - http://prometheus.io
         - http://15.206.28.196:3000   # Grafana
-        - http://65.2.167.238:8080    # Jenkins
+         - http://a57ed23f9c458412aa20a155221c48d2-1973915241.ap-south-1.elb.amazonaws.com/ #on which website is hosted.
   relabel_configs:
     - source_labels: [__address__]
       target_label: __param_target
     - source_labels: [__param_target]
       target_label: instance
     - target_label: __address__
-      replacement: 15.206.28.196:9115
+      replacement: 15.206.28.196:9115   # The blackbox exporter's real hostname.
 
 # Jenkins metrics
 - job_name: 'jenkins'
