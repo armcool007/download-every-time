@@ -1,0 +1,16 @@
+Logs Padhne ki Ninja Technique 🎯
+  Rule 1: Sabse Pehle "Error:" ya "Cannot find" Dhundho
+    Logs mein bahut saari lines hoti hain — unhe ignore karo. Sirf yeh pattern dhundho:
+    Error:
+    Cannot find
+    Failed
+    ENOENT (yeh matlab "file nahi mili")
+
+  Rule 2: "Stack Trace" ko Ignore Karo (Shuru Mein)
+    Yeh wali lines skip karo:
+    at Function.Module._resolveFilename (node:internal/...)
+    at Function.Module._load (node:internal/...)
+    Yeh sirf "kahan se aaya error" bataata hai — kya hua nahi bataata. Beginner ke liye useless hai.
+  Rule 3: Pehli aur Aakhri Line Dekho
+    Error ki pehli meaningful line mein problem hoti hai:
+    Error: Cannot find module '/usr/src/app/serve.js'  ← YEH DEKHO
