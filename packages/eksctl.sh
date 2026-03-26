@@ -4,5 +4,5 @@ sudo mv /tmp/eksctl /usr/local/bin
 eksctl version
 
 #TO CREATE A CLUSTER WITH ONLY ONE MACHINE WITH SIZE 20GB:
-  eksctl create cluster --name karma --region ap-south-1 --node-type t3.small --nodes 1 --nodes-min 1 --nodes-max 1 --node-volume-size 20
+  eksctl create cluster --name test_cluster --region ap-south-1 --node-type t3.small --nodes 1 --nodes-min 1 --nodes-max 1 --node-volume-size 20
 
