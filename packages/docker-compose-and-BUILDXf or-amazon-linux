@@ -1,0 +1,22 @@
+# Download latest Docker Compose binary
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+# Make it executable
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Verify
+docker-compose --version
+
+#DOWNLOADING DOCKER BUILDX
+# Download correct binary with correct filename format
+wget -O ~/.docker/cli-plugins/docker-buildx \
+  "https://github.com/docker/buildx/releases/download/v0.32.0/buildx-v0.32.0.linux-amd64"
+
+# Check size (should be ~50MB+)
+ls -lh ~/.docker/cli-plugins/docker-buildx
+
+# Make executable
+chmod +x ~/.docker/cli-plugins/docker-buildx
+
+# Verify
+docker buildx version
