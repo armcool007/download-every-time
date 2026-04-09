@@ -1,0 +1,32 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ConsoleBucketAccess",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets",
+                "s3:ListAccessPoints",
+                "s3:GetAccessPoint"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AccessPointObjectAccess",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:ap-south-1:95011xxxxx:accesspoint/karish/object/*"
+        },
+        {
+            "Sid": "AccessPointListAccess",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": "arn:aws:s3:ap-south-1:95011xxxxx:accesspoint/karish"
+        }
+    ]
+}
