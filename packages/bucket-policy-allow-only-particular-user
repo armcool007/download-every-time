@@ -1,0 +1,37 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ObjectActions",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::95011xxxxxx:user/user2"
+            },
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::user-2-duck-buck/*"
+        },
+        {
+            "Sid": "BucketActions",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::95011xxxxx:user/user2"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::user-2-duck-buck"
+        }
+    ]
+}
+
+
+
+#####################################################################################################################################
+#Kyun?
+#                              IAM Policy                                  Bucket Policy
+#Kahan likhi jaati hai          User/Role pe                                 Bucket pe
+#Principal chahiye?             ❌ Nahi                                      ✅ Haan
+#Kaun access karega?            Automatically pata hota hai (wahi user)      Explicitly batana padta hai ki konsa user access karega
+#####################################################################################################################################
