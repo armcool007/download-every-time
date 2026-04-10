@@ -1,0 +1,102 @@
+Here are all the steps to send EC2 logs to CloudWatch:
+
+Step 1 — IAM Role banao EC2 ke liye
+
+IAM → Roles → Create Role
+EC2 select karein
+Yeh policy attach karein: CloudWatchAgentServerPolicy
+Role naam dein: EC2-CloudWatch-Role
+Create Role
+
+
+Step 2 — Role EC2 se attach karo
+
+EC2 → Apna instance select karein
+Actions → Security → Modify IAM Role
+EC2-CloudWatch-Role select karein → Update
+
+
+Step 3 — CloudWatch Agent install karo
+EC2 mein SSH karke yeh commands chalao:
+bash# CloudWatch Agent download karo
+sudo dnf install amazon-cloudwatch-agent -y
+
+Step 4 — Agent configure karo
+bash# Configuration wizard chalao
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+Wizard mein yeh options select karein:
+On which OS are you running? → 1 (Linux)
+Are you running on EC2? → 1 (Yes)
+Root or non-root? → 2 (non-root)
+Do you want to turn on StatsD? → 2 (No)
+Do you want to monitor CPU? → 2 (No)
+Do you want to monitor logs? → 1 (Yes)
+Log file path → /var/log/messages
+Log group name → my-ec2-logs
+Log stream name → {instance_id}
+
+Step 5 — Ya manually config file banao
+bashsudo nano /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+Yeh paste karein:
+json{
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/messages",
+            "log_group_name": "my-ec2-logs",
+            "log_stream_name": "{instance_id}",
+            "timestamp_format": "%b %d %H:%M:%S"
+          },
+          {
+            "file_path": "/var/log/secure",
+            "log_group_name": "my-ec2-secure-logs",
+            "log_stream_name": "{instance_id}",
+            "timestamp_format": "%b %d %H:%M:%S"
+          }
+        ]
+      }
+    }
+  }
+}
+
+Step 6 — Agent start karo
+bash# Agent start karo
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+    -a fetch-config \
+    -m ec2 \
+    -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json \
+    -s
+
+# Status check karo
+sudo systemctl status amazon-cloudwatch-agent
+
+# Enable karo taaki reboot pe bhi chale
+sudo systemctl enable amazon-cloudwatch-agent
+
+Step 7 — CloudWatch mein logs dekho
+
+AWS Console → CloudWatch
+Left menu → Logs → Log Groups
+my-ec2-logs dhundein
+Andar jaao → Log Streams → Apna instance ID select karein
+Logs dikhengi! ✅
+
+#########################################################################################################
+NOTE: ye file nai hogi phle se "/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json" you have to create:
+  {
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/messages",
+            "log_group_name": "my-ec2-logs",
+            "log_stream_name": "{instance_id}"
+          }
+        ]
+      }
+    }
+  }
+}
