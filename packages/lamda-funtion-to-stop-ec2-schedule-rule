@@ -1,0 +1,79 @@
+Here's a Python Lambda function to shut down EC2 instances:
+-----------------------------------------------------------
+import boto3
+import json
+
+def lambda_handler(event, context):
+    
+    # Region specify karein
+    ec2 = boto3.client('ec2', region_name='ap-south-1')  # Apna region daalein
+    
+    # ---- OPTION 1: Specific instance IDs band karo ----
+    instance_ids = ['i-1234567890abcdef0']  # Apne instance IDs daalein
+    
+    # ---- OPTION 2: Tag se dhundo aur band karo ----
+    # response = ec2.describe_instances(
+    #     Filters=[
+    #         {'Name': 'tag:Environment', 'Values': ['dev']},
+    #         {'Name': 'instance-state-name', 'Values': ['running']}
+    #     ]
+    # )
+    # instance_ids = []
+    # for reservation in response['Reservations']:
+    #     for instance in reservation['Instances']:
+    #         instance_ids.append(instance['InstanceId'])
+    
+    if not instance_ids:
+        return {
+            'statusCode': 200,
+            'body': json.dumps('Koi running instance nahi mila')
+        }
+    
+    # Instances stop karo
+    response = ec2.stop_instances(InstanceIds=instance_ids)
+    
+    stopped = []
+    for instance in response['StoppingInstances']:
+        stopped.append({
+            'InstanceId': instance['InstanceId'],
+            'PreviousState': instance['PreviousState']['Name'],
+            'CurrentState': instance['CurrentState']['Name']
+        })
+        print(f"Instance {instance['InstanceId']}: "
+              f"{instance['PreviousState']['Name']} → {instance['CurrentState']['Name']}")
+    
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            'message': f'{len(stopped)} instance(s) stop kiye gaye',
+            'instances': stopped
+        })
+    }
+####################################################################################################################################################################
+Here's the IAM Policy for Lambda to stop EC2:
+---------------------------------------------
+json{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowEC2Stop",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:StopInstances",
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceStatus"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "AllowCloudWatchLogs",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        }
+    ]
+}
