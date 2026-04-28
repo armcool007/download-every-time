@@ -42,6 +42,9 @@ eksctl create cluster --name cluster-name  \
 --nodes-max 2 \ 
 --zones <AZ-1>,<AZ-2>
 
+	NOTE: For crating only one node with size of 20GB use this command:
+		eksctl create cluster --name karma --region ap-south-1 --node-type t3.small  --nodes-max 1 --nodes-min 1 --node-volume-size 20
+
 ## N. Virgina: <br/>
 ```
 eksctl create cluster --name ashokit-cluster4 --region us-east-1 --node-type t2.medium  --zones us-east-1a,us-east-1b
